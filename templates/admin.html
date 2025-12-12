@@ -20,6 +20,7 @@
         {% endwith %}
 
         <form method="POST">
+            <input type="hidden" name="form_type" value="update_status">
             <div class="card">
                 <h3>🚩 จุดเข้าแถววันนี้</h3>
                 <label><input type="radio" name="assembly_point" value="เสาธง" checked> เสาธง ☀️</label><br>
@@ -43,6 +44,38 @@
                 💾 บันทึกการเปลี่ยนแปลง
             </button>
         </form>
+        <hr style="margin: 40px 0; border: 1px dashed #ccc;">
+
+        <div class="card announcement-card" style="border-left: 5px solid #2563eb;">
+            <h3>📰 เขียนข่าวประชาสัมพันธ์</h3>
+            <form method="POST">
+                <input type="hidden" name="form_type" value="add_news"> 
+                
+                <label>หัวข้อข่าว:</label><br>
+                <input type="text" name="title" required style="width:95%; padding:10px; margin-bottom:10px;"><br>
+                
+                <label>เนื้อหา:</label><br>
+                <textarea name="content" rows="3" required style="width:95%; padding:10px;"></textarea><br>
+                
+                <button type="submit" style="margin-top:10px; padding:10px 20px; background:#2563eb; color:white; border:none; border-radius:5px; cursor:pointer;">
+                    📢 โพสต์ข่าว
+                </button>
+            </form>
+
+            <h4 style="margin-top: 20px;">รายการข่าวล่าสุด:</h4>
+            <ul>
+                {% for news in recent_news %}
+                    <li style="margin-bottom: 5px;">
+                        <strong>{{ news[0] }}</strong> 
+                        <span style="color:gray; font-size: 0.8em;">({{ news[1].strftime('%d/%m %H:%M') }})</span>
+                    </li>
+                {% else %}
+                    <li style="color: gray;">ยังไม่มีข่าวประชาสัมพันธ์</li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <div style="height: 50px;"></div> </div>
     </div>
 </body>
 </html>

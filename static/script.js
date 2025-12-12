@@ -37,8 +37,26 @@ function renderUI() {
     if (todayData.special_message) {
         document.getElementById('announcement-box').style.display = 'block';
         document.getElementById('special-message').innerText = todayData.special_message;
+    } else {
+        document.getElementById('announcement-box').style.display = 'none';
     }
 
+    const newsFeed = document.getElementById('news-feed');
+    if (newsFeed && todayData.announcements) {
+        newsFeed.innerHTML = '<h3>📰 ข่าวประชาสัมพันธ์</h3>'; // หัวข้อ
+        todayData.announcements.forEach(news => {
+            const newsItem = document.createElement('div');
+            newsItem.className = 'card';
+            newsItem.style.borderLeft = '4px solid #3b82f6'; // ขีดสีฟ้า
+            newsItem.style.textAlign = 'left';
+            newsItem.innerHTML = `
+                <div style="font-weight:bold; font-size:1.1rem;">${news.title}</div>
+                <div style="color:#4b5563; margin-top:5px;">${news.content}</div>
+                <div style="color:#9ca3af; font-size:0.8rem; margin-top:8px;">🕒 ${news.date}</div>
+            `;
+            newsFeed.appendChild(newsItem);
+        });
+    }
     // วาดตารางเวลาด้านล่าง
     const list = document.getElementById('timeline-list');
     list.innerHTML = ''; // เคลียร์ของเก่า

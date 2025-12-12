@@ -279,7 +279,18 @@ def get_today_status():
         
         data["timetable"] = SCHEDULE_TEMPLATES.get(mode, SCHEDULE_TEMPLATES["normal_50"])
 
-        data["announcements"] = [] 
+        cur.execute("SELECT title, content, created_at FROM announcements ORDER BY created_at DESC LIMIT 3")
+        news_rows = cur.fetchall()
+
+        news_list = []
+        for row in news_rows:
+            news_list.append({
+                "title": row[0],
+                "content": row[1],
+                "date": row[2].strftime("%d/%m/%Y %H:%M")
+            })
+            
+        data["announcements"] = news_list
 
         return jsonify(data)
 
@@ -340,29 +351,44 @@ def admin():
     cur = conn.cursor()
 
     if request.method == 'POST':
-        assembly = request.form['assembly_point']
-        mode = request.form['schedule_mode']
-        msg = request.form['special_message']
+        form_type = request.form.get('form_type')
 
-        sql = """
-            INSERT INTO daily_status (status_date, assembly_point, schedule_mode, special_message)
-            VALUES (CURRENT_DATE, %s, %s, %s)
-            ON CONFLICT (status_date) 
-            DO UPDATE SET 
-                assembly_point = EXCLUDED.assembly_point,
-                schedule_mode = EXCLUDED.schedule_mode,
-                special_message = EXCLUDED.special_message;
-        """
-        cur.execute(sql, (assembly, mode, msg))
-        conn.commit()
-        flash('บันทึกข้อมูลสำเร็จ! 🎉')
+        if form_type == 'update_status':
+            assembly = request.form['assembly_point']
+            mode = request.form['schedule_mode']
+            msg = request.form['special_message']
+            
+            sql = """
+                INSERT INTO daily_status (status_date, assembly_point, schedule_mode, special_message)
+                VALUES (CURRENT_DATE, %s, %s, %s)
+                ON CONFLICT (status_date) 
+                DO UPDATE SET 
+                    assembly_point = EXCLUDED.assembly_point,
+                    schedule_mode = EXCLUDED.schedule_mode,
+                    special_message = EXCLUDED.special_message;
+            """
+            cur.execute(sql, (assembly, mode, msg))
+            conn.commit()
+            flash('บันทึกสถานะเรียบร้อย! ✅')
+
+        elif form_type == 'add_news':
+            title = request.form['title']
+            content = request.form['content']
+            
+            cur.execute("INSERT INTO announcements (title, content) VALUES (%s, %s)", (title, content))
+            conn.commit()
+            flash('ลงประกาศข่าวเรียบร้อย! 📢')
 
     cur.execute("SELECT assembly_point, schedule_mode, special_message FROM daily_status WHERE status_date = CURRENT_DATE")
-    current_status = cur.fetchone()
+    status = cur.fetchone()
+    
+    cur.execute("SELECT title, created_at FROM announcements ORDER BY created_at DESC LIMIT 5")
+    recent_news = cur.fetchall()
+    
     cur.close()
     conn.close()
 
-    return render_template('admin.html', status=current_status)
+    return render_template('admin.html', status=status, recent_news=recent_news)
 
 if __name__ == '__main__':
     app.run(debug = True, host='0.0.0.0' ,port = 5000)
