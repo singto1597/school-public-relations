@@ -120,6 +120,63 @@ SCHEDULE_TEMPLATES = {
             "end": "14:50"
         }
     ],
+    "even_50": [
+        {
+            "period": "เข้าแถว",
+            "start": "07:45",
+            "end": "09:00"
+        },
+        {
+            "period": "คาบ 1",
+            "start": "09:00",
+            "end": "09:40"
+        },
+        {
+            "period": "คาบ 2",
+            "start": "09:40",
+            "end": "10:20"
+        },
+        {
+            "period": "พัก 20",
+            "start": "10:20",
+            "end": "10:40"
+        },
+        {
+            "period": "คาบ 3",
+            "start": "10:40",
+            "end": "11:30"
+        },
+        {
+            "period": "คาบ 4",
+            "start": "11:30",
+            "end": "12:10"
+        },
+        {
+            "period": "คาบ 5",
+            "start": "12:10",
+            "end": "13:00"
+        },
+        {
+            "period": "คาบ 6",
+            "start": "13:00",
+            "end": "13:50"
+        },
+        {
+            "period": "คาบ 7",
+            "start": "13:50",
+            "end": "14:40"
+        },
+        {
+            "period": "คาบ 8",
+            "start": "14:40",
+            "end": "15:30"
+        },
+        {
+            "period": "คาบ 9",
+            "start": "15:30",
+            "end": "16:20"
+        }
+    ],
     "exam": [
         {
             "period": "เข้าแถว",
@@ -144,11 +201,6 @@ SCHEDULE_TEMPLATES = {
     ]
 }
 
-def get_pm25():
-    try:
-        return 45
-    except:
-        return None 
 
 load_dotenv()
 
@@ -173,6 +225,10 @@ def get_today_status():
     cur = conn.cursor()
 
     try:
+        weekday = date.today().weekday()
+        default_assembly = "หน้าห้อง" 
+        if weekday in [0, 2, 4]: 
+            default_assembly = "เสาธง"
         cur.execute("""
             SELECT assembly_point, schedule_mode, special_message 
             FROM daily_status 
@@ -182,7 +238,7 @@ def get_today_status():
 
         data = {
             "date": str(date.today()),
-            "assembly_point": "เสาธง",  # ค่า Default
+            "assembly_point": default_assembly,  # ค่า Default
             "schedule_mode": "normal_50", # ค่า Default
             "special_message": ""
         }
