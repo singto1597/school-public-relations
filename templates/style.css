@@ -1,0 +1,63 @@
+body {
+    font-family: 'Kanit', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f3f4f6;
+    color: #1f2937;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h1 { margin: 0; color: #374151; }
+#date-display { color: #6b7280; font-size: 0.9rem; }
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.label { font-size: 0.9rem; color: #6b7280; margin-bottom: 5px; }
+.value { font-size: 2rem; font-weight: bold; }
+
+.status-card { background-color: #d1fae5; color: #065f46; } /* Default Green */
+
+.countdown-card .timer {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #2563eb;
+    margin: 10px 0;
+}
+
+.announcement-card {
+    border-left: 5px solid #ef4444;
+    text-align: left;
+}
+.announcement-card .label { color: #ef4444; font-weight: bold; }
+
+.schedule-list h3 { margin-bottom: 10px; }
+.schedule-list ul {
+    list-style: none;
+    padding: 0;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+}
+.schedule-list li {
+    padding: 12px 20px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+}
+.schedule-list li:last-child { border-bottom: none; }
