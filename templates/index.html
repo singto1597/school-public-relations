@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Pulse</title>
+    <title>School Public Relations</title>
     <link rel="stylesheet" href="/static/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
@@ -19,6 +19,11 @@
             <div class="label">จุดเข้าแถว</div>
             <div class="value" id="assembly-point">...</div>
         </div>
+        
+        <div class="card">
+            <div class="label">รูปแบบตารางเรียนวันนี้</div>
+            <div class="value" id="schedule-mode-display" style="color: #2563eb;">...</div>
+        </div>
 
         <div class="card countdown-card">
             <div class="label">กำลังเรียน: <span id="current-period-name">...</span></div>
@@ -30,7 +35,7 @@
             <div class="label">📢 ประกาศด่วน</div>
             <div class="msg" id="special-message"></div>
         </div>
-        
+
         <div id="news-feed" style="margin-top: 20px;"></div>
 
         <div class="schedule-list">
@@ -38,6 +43,10 @@
             <ul id="timeline-list">
                 </ul>
         </div>
+        <div style="height: 30px;"></div> <footer style="text-align: center; margin-top: 20px; margin-bottom: 40px; color: #9ca3af; font-size: 0.85rem; opacity: 0.8;">
+            <p style="margin: 0;">พัฒนาโดย <strong>เด็กชายพัฒนพล สุธรรม</strong></p>
+            <p style="margin: 5px 0 0 0; font-size: 0.75rem;">Project School Public Relations ( M.3/1 )</p>
+        </footer>
     </div>
 
     <script src="/static/script.js"></script>

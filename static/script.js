@@ -33,6 +33,16 @@ function renderUI() {
         statusBox.style.color = '#92400e';
     }
 
+    const modeNames = {
+        'normal_50': 'ตาราง 2 (50 นาที)',
+        'short_40': 'ตาราง 4 (40 นาที)',
+        'even_50': 'ตาราง 3 (กิจกรรมเช้า)',
+        'exam': 'ตารางสอบ'
+    };
+
+    const modeText = modeNames[todayData.schedule_mode] || todayData.schedule_mode;
+    document.getElementById('schedule-mode-display').innerText = modeText;
+
     // แสดงประกาศ (ถ้ามี)
     if (todayData.special_message) {
         document.getElementById('announcement-box').style.display = 'block';
