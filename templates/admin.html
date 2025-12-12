@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚙️ จัดการสถานะโรงเรียน</h1>
+            <p>สวัสดีครับคุณครู! <a href="/logout" style="color:red">ออกจากระบบ</a> | <a href="/">ไปหน้าเว็บหลัก</a></p>
+        </header>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div style="background:#d1fae5; color:#065f46; padding:10px; border-radius:8px; margin-bottom:20px; text-align:center;">
+                    {{ messages[0] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="card">
+                <h3>🚩 จุดเข้าแถววันนี้</h3>
+                <label><input type="radio" name="assembly_point" value="เสาธง" checked> เสาธง ☀️</label><br>
+                <label><input type="radio" name="assembly_point" value="หน้าห้อง"> หน้าห้อง 🌧️</label><br>
+            </div>
+
+            <div class="card">
+                <h3>⏱️ ตารางเวลา</h3>
+                <label><input type="radio" name="schedule_mode" value="normal_50" checked> ตาราง 2 (50 นาที)</label><br>
+                <label><input type="radio" name="schedule_mode" value="even_50"> ตาราง 3 (กิจกรรมเช้า)</label><br>
+                <label><input type="radio" name="schedule_mode" value="short_40"> ตาราง 4 (40 นาที)</label><br>
+                <label><input type="radio" name="schedule_mode" value="exam"> สอบกลางภาค/ปลายภาค</label>
+            </div>
+
+            <div class="card">
+                <h3>📢 ประกาศเพิ่มเติม</h3>
+                <textarea name="special_message" rows="4" style="width:100%; padding:10px;" placeholder="เช่น งดกิจกรรมหน้าเสาธง, วันนี้เลิกเร็ว..."></textarea>
+            </div>
+
+            <button type="submit" style="width:100%; padding:15px; background:#2563eb; color:white; border:none; border-radius:8px; font-size:1.2rem; cursor:pointer;">
+                💾 บันทึกการเปลี่ยนแปลง
+            </button>
+        </form>
+    </div>
+</body>
+</html>

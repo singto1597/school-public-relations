@@ -1,9 +1,10 @@
 import os
 import psycopg2
-import requests
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
 from dotenv import load_dotenv
 from datetime import date
+from werkzeug.security import check_password_hash
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 SCHEDULE_TEMPLATES = {
     "normal_50": [
@@ -205,6 +206,11 @@ SCHEDULE_TEMPLATES = {
 load_dotenv()
 
 app = Flask(__name__)
+app.secret_key = 'super_secret_key_change_this_later'
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 def get_db_connection():
     conn = psycopg2.connect(
@@ -214,6 +220,26 @@ def get_db_connection():
         password = os.environ.get('DB_PASS')
     )
     return conn
+
+
+class User(UserMixin):
+    def __init__(self, id, username, password_hash):
+        self.id = id
+        self.username = username
+        self.password_hash = password_hash
+
+@login_manager.user_loader
+def load_user(user_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id, username, password_hash FROM users WHERE id = %s", (user_id,))
+    user_data = cur.fetchone()
+    cur.close()
+    conn.close()
+    if user_data:
+        return User(id=user_data[0], username=user_data[1], password_hash=user_data[2])
+    return None
+
 
 @app.route('/')
 def index():
@@ -276,5 +302,67 @@ def test_db():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
     
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT id, username, password_hash FROM users WHERE username = %s", (username,))
+        user_data = cur.fetchone()
+        cur.close()
+        conn.close()
+
+        if user_data and check_password_hash(user_data[2], password):
+            user = User(id=user_data[0], username=user_data[1], password_hash=user_data[2])
+            login_user(user)
+            return redirect(url_for('admin'))
+        else:
+            flash('Login Failed: ชื่อผู้ใช้หรือรหัสผ่านผิด')
+    
+    return render_template('login.html')
+    
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+
+@app.route('/admin', methods=['GET', 'POST'])
+@login_required 
+def admin():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    if request.method == 'POST':
+        assembly = request.form['assembly_point']
+        mode = request.form['schedule_mode']
+        msg = request.form['special_message']
+
+        sql = """
+            INSERT INTO daily_status (status_date, assembly_point, schedule_mode, special_message)
+            VALUES (CURRENT_DATE, %s, %s, %s)
+            ON CONFLICT (status_date) 
+            DO UPDATE SET 
+                assembly_point = EXCLUDED.assembly_point,
+                schedule_mode = EXCLUDED.schedule_mode,
+                special_message = EXCLUDED.special_message;
+        """
+        cur.execute(sql, (assembly, mode, msg))
+        conn.commit()
+        flash('บันทึกข้อมูลสำเร็จ! 🎉')
+
+    cur.execute("SELECT assembly_point, schedule_mode, special_message FROM daily_status WHERE status_date = CURRENT_DATE")
+    current_status = cur.fetchone()
+    cur.close()
+    conn.close()
+
+    return render_template('admin.html', status=current_status)
+
 if __name__ == '__main__':
     app.run(debug = True, host='0.0.0.0' ,port = 5000)
